@@ -26,22 +26,28 @@ from reddwarf.common import config
 LOG = logging.getLogger(__name__)
 
 
+def get_dns_driver():
+    return config.Config.get("dns_driver", "reddwarf.dns.driver.DnsDriver")
+
+
+def get_dns_instance_entry_factory():
+    return config.Config.get(
+        'dns_instance_entry_factory',
+        'reddwarf.dns.driver.DnsInstanceEntryFactory')
+
+
 class DnsManager(object):
     """Handles associating DNS to and from IPs."""
 
     def __init__(self, dns_driver=None, dns_instance_entry_factory=None,
                  *args, **kwargs):
         if not dns_driver:
-            dns_driver = config.Config.get(
-                "dns_driver",
-                "reddwarf.dns.driver.DnsDriver")
+            dns_driver = get_dns_driver()
         dns_driver = utils.import_object(dns_driver)
         self.driver = dns_driver()
 
         if not dns_instance_entry_factory:
-            dns_instance_entry_factory = config.Config.get(
-                'dns_instance_entry_factory',
-                'reddwarf.dns.driver.DnsInstanceEntryFactory')
+            dns_instance_entry_factory = get_dns_instance_entry_factory()
         entry_factory = utils.import_object(dns_instance_entry_factory)
         self.entry_factory = entry_factory()
 

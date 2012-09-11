@@ -27,6 +27,20 @@ def create_dns_client(context):
     return DnsManager()
 
 
+def create_dns_hostname_factory(context):
+    """Creates a function that given an ID, determines the hostname."""
+    from reddwarf.dns.manager import get_dns_instance_entry_factory
+    factory = get_dns_instance_entry_factory()
+    def determine_hostname(instance_id):
+        entry = factory.create_entry(instance_id)
+        if entry:
+            return entry.name
+        else:
+            return None
+
+    return determine_hostname
+
+
 def create_guest_client(context, id):
     from reddwarf.guestagent.api import API
     return API(context, id)
